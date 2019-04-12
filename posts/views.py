@@ -15,6 +15,7 @@ def create(request):
                     image = image_form.save(commit=False)
                     image.post = post
                     image.save()
+                    
             return redirect('posts:list')
     else:
         post_form = PostForm()
