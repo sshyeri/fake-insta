@@ -28,9 +28,25 @@
             <img src="#" class="card-img-top" alt="NO_IMAGE">
         {% endif %}
         
-        <!--포스트 내용-->
         <div class="card-body">
-            <p class="card-text">{{ post.content }}</p>
+            
+            <!--좋아요-->
+            <h3 class="card-title">
+                <a href="{% url 'posts:like' post.pk %}">
+                    {% if request.user in post.like_users.all %}
+                        <span style="color: hotpink;">
+                    {% else %}
+                        <span style="color: grey;">
+                    {% endif %}
+                        <i class="fas fa-democrat"></i>
+                </a>
+            </h3>
+            {% if post.like_users.count %}
+                <p class="card-text"> <b>{{ post.like_users.last }}</b>님 외 <b>{{ post.like_users.count }}명</b>이 좋아합니다.</p>
+            {% endif %}
+            
+            <!--포스트 내용-->
+            <p class="card-text"><b>{{ post.user }} </b> {{ post.content }}</p>
             {% if request.user == post.user %}
                 <a href="{% url 'posts:update' post.pk %}" class="btn btn-warning">수정</a>
                 <form action="{% url 'posts:delete' post.pk %}" method = "POST" style="display:inline;">

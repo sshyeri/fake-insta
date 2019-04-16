@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CreateUserForm
-from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 def signup(request):
@@ -39,3 +39,8 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect('posts:list')
+    
+def people(request, username):
+    people = get_object_or_404(get_user_model(), username=username)
+    context = {'people': people, }
+    return render(request, 'accounts/people.html', context)
