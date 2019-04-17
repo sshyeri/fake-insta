@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form  form %}
+        {% buttons submit="수정하기" reset="되돌리기" %}{% endbuttons %}
+    </form>
+    <hr>
+    <form action="{% url 'accounts:delete' %}" method="POST" onsubmit="return confirm('R U Sure?');">
+        {% csrf_token %}
+        <a class="btn btn-info" href="{% url 'people' user.username %}" role="button">Back</a>
+        <button type="submit" class="btn btn-danger">회원탈퇴</button>
+    </form>
+    
+{% endblock %}
