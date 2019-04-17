@@ -15,6 +15,9 @@
         <ul class="navbar-nav">
             {% if user.is_authenticated %}
                 <li class="nav-item">
+                    <a href="{% url 'posts:explore' %}" class="nav-link">Explore</a>
+                </li>
+                <li class="nav-item">
                     <a href="{% url 'posts:create' %}" class="nav-link">New</a>
                 </li>
                 <li class="nav-item">
