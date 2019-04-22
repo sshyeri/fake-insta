@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from .forms import PostForm, ImageForm, CommentForm
-from .models import Post, Image, Comment
+from .models import Post, Image, Comment, Hashtag
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db.models import Q
@@ -15,6 +15,22 @@ def create(request):
             post = post_form.save(commit=False) #게시글 내용 처리 끝
             post.user = request.user
             post.save()
+            # hashtag - post.save()가 된 이후에 hashtag 코드가 와야함.
+            # 강사님
+            temp = post.content.split()
+            for word in temp:
+                if word.startswith('#'):
+                    #1
+                    # if word not in Hashtag.objects.all():
+                    #     hashtag = Hashtag.objects.create(content = word)
+                    # else:
+                    #     hashtag = Hashtag.objects.get(content=word)
+                    #2 
+                    # hashtag = Hashtag.objects.get(content=word, Hashtag.objects.create(content = word))
+                    #3
+                    hashtag = Hashtag.objects.get_or_create(content=word)[0]
+                    post.hashtags.add(hashtag)
+                        
             for image in request.FILES.getlist('file'):
                 request.FILES['file'] = image
                 image_form = ImageForm(files=request.FILES)
@@ -32,7 +48,8 @@ def create(request):
         'image_form' : image_form,
     }
     return render(request, 'posts/form.html', context)
-    
+
+@login_required
 def list(request):
     # posts = get_list_or_404(Post.objects.order_by('-pk'))
     
@@ -59,7 +76,14 @@ def update(request, post_pk):
     if request.method == 'POST':
         post_form = PostForm(request.POST, instance=post)
         if post_form.is_valid():
-            post_form.save()
+            post = post_form.save()
+            # hashtag update
+            post.hashtags.clear()
+            temp = post.content.split()
+            for word in temp:
+                if word.startswith('#'):
+                    hashtag = Hashtag.objects.get_or_create(content=word)[0]
+                    post.hashtags.add(hashtag)
             return redirect('posts:list')
     else:
         post_form = PostForm(instance=post)
@@ -114,3 +138,12 @@ def explore(request):
         'comment_form': comment_form,
     }
     return render(request, 'posts/list.html', context)
+    
+def hashtag(request, hash_pk):
+    hashtag = get_object_or_404(Hashtag, pk=hash_pk)
+    posts = hashtag.post_set.order_by('-pk')
+    context = {
+        'hashtag': hashtag,
+        'posts':posts,
+    }
+    return render(request, 'posts/hashtag.html', context)

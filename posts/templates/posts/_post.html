@@ -1,4 +1,5 @@
 {% load bootstrap4 %}
+{% load posts_templatetag %}
 <div class="col-10 my-3">
     <div class="card">
         <div class="card-header">
@@ -46,7 +47,7 @@
             {% endif %}
             
             <!--포스트 내용-->
-            <p class="card-text"><b>{{ post.user }} </b> {{ post.content }}</p>
+            <p class="card-text"><b>{{ post.user }} </b> {{ post|hashtag_link|safe }}</p>
             {% if request.user == post.user %}
                 <a href="{% url 'posts:update' post.pk %}" class="btn btn-warning">수정</a>
                 <form action="{% url 'posts:delete' post.pk %}" method = "POST" style="display:inline;">
